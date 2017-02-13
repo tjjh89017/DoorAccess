@@ -1,5 +1,7 @@
 package date.kojuro.dooraccess;
 
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
@@ -179,15 +181,6 @@ public class MainActivity extends AppCompatActivity {
 
             case MENU_DELETE:
                 /* TODO Need verify operation */
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-                builder.setMessage("Delete " + tag.getDescription() + "\nUID: " + tag.getUID() + " ?")
-                        .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                DeleteTag(tag);
-                            }
-                        })
-                        .setNegativeButton("Cancel", null);
                 DeleteTag(tag);
                 break;
         }
