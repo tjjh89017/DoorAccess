@@ -1,0 +1,42 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+        ndk {
+            moduleName "nfcgate-native"
+            //cFlags "-std=c++11" //  -fexceptions -marm -g -fPIE
+            ldLibs "log"
+            abiFilters "armeabi"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+    }
+    externalNativeBuild {
+        cmake {
+            path 'CMakeLists.txt'
+        }
+    }
+}
+
+dependencies {
+    //This must NOT be included
+    //compile fileTree(include: ['*.jar'], dir: 'libs')
+    // provided files('libs/XposedBridgeApi-20150213.jar')
+    provided 'de.robv.android.xposed:api:82'
+    provided 'de.robv.android.xposed:api:82:sources'
+}
