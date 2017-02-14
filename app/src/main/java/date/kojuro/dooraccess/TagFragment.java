@@ -2,9 +2,9 @@ package date.kojuro.dooraccess;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -31,7 +31,7 @@ public class TagFragment extends DialogFragment {
         preInput(vEditUID, vEditDesc);
 
         builder.setView(dialogView)
-                .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -53,7 +53,7 @@ public class TagFragment extends DialogFragment {
 
     public void postInput(Tag tag) {
 
-        MainActivity activity = (MainActivity)getActivity();
-        activity.CreateNewTag(tag);
+        SetUIDFragment setUIDFragment = (SetUIDFragment)getTargetFragment();
+        setUIDFragment.CreateNewTag(tag);
     }
 }
