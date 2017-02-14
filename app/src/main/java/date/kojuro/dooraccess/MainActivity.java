@@ -1,7 +1,11 @@
 package date.kojuro.dooraccess;
 
 import android.app.FragmentManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -43,11 +47,16 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton vCreate;
     private FragmentManager mFragmentManager;
 
+    private DrawerLayout vDrawerLayout;
+    private NavigationView vNavigationView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /* Get View */
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -60,9 +69,14 @@ public class MainActivity extends AppCompatActivity {
         DaemonConfiguration.Init(this);
         mDaemon = DaemonConfiguration.getInstance();
 
-        vTagList = (ListView)findViewById(R.id.UIDList);
-        vCreate = (FloatingActionButton)findViewById(R.id.Create);
+        vTagList = (ListView) findViewById(R.id.UIDList);
+        vCreate = (FloatingActionButton) findViewById(R.id.Create);
         mFragmentManager = getFragmentManager();
+
+        vDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        vNavigationView = (NavigationView) findViewById(R.id.nav_drawer);
+
+        /* Set action */
 
         mTagAdapter = new ArrayAdapter<Tag>(this, 0 /* useless */, mTagList) {
             @Override
@@ -113,6 +127,31 @@ public class MainActivity extends AppCompatActivity {
                 createTag.show(mFragmentManager, "CreateTag");
             }
         });
+
+
+        vNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
+
+                item.setChecked(true);
+                vDrawerLayout.closeDrawers();
+                return true;
+            }
+        });
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                vDrawerLayout,
+                toolbar,
+                R.string.open_drawer,
+                R.string.close_drawer
+        );
+        actionBarDrawerToggle.syncState();
+
+        vDrawerLayout.addDrawerListener(actionBarDrawerToggle);
+
     }
 
     public void CreateNewTag(Tag tag) {
