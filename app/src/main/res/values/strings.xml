@@ -1,9 +1,8 @@
 <resources>
     <string name="app_name">DoorAccess</string>
-    <string name="title_activity_main2">Main2Activity</string>
     <string name="open_drawer"></string>
     <string name="close_drawer"></string>
-    <string name="title_activity_main__ping_note">MainActivity_PingNote</string>
+    <string name="title_activity_main">DoorAccess</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
