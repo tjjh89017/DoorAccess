@@ -1,11 +1,7 @@
 package date.kojuro.dooraccess;
 
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -17,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -32,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private final static byte ATQA = 0x00;
     private final static byte SAK = 0x20;
     private final static byte[] HIST = new byte[]{};
-    private final static int MENU_MODIFY = Menu.FIRST;
-    private final static int MENU_DELETE = Menu.FIRST + 1;
+    private final static int CONTEXT_MENU_MODIFY = Menu.FIRST;
+    private final static int CONTEXT_MENU_DELETE = Menu.FIRST + 1;
 
     private DBService mDBService;
     private TagDao mTagDao;
@@ -105,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 
-                menu.add(Menu.NONE, MENU_MODIFY, Menu.NONE, "Modify");
-                menu.add(Menu.NONE, MENU_DELETE, Menu.NONE, "Delete");
+                menu.add(Menu.NONE, CONTEXT_MENU_MODIFY, Menu.NONE, "Modify");
+                menu.add(Menu.NONE, CONTEXT_MENU_DELETE, Menu.NONE, "Delete");
             }
         });
 
@@ -151,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
          */
         final Tag tag = mTagList.get(menuInfo.position);
         switch(menuItem.getItemId()) {
-            case MENU_MODIFY:
+            case CONTEXT_MENU_MODIFY:
                 TagFragment createTag = new TagFragment(){
                     @Override
                     public void preInput(EditText vEditUID, EditText vEditDesc) {
@@ -166,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                 createTag.show(mFragmentManager, "ModifyTag");
                 break;
 
-            case MENU_DELETE:
+            case CONTEXT_MENU_DELETE:
                 /* TODO Need verify operation */
                 DeleteTag(tag);
                 break;
