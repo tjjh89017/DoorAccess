@@ -3,4 +3,15 @@
     <string name="title_activity_main2">Main2Activity</string>
     <string name="open_drawer"></string>
     <string name="close_drawer"></string>
+    <string name="title_activity_main__ping_note">MainActivity_PingNote</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment2">Hello blank fragment2</string>
+
 </resources>
