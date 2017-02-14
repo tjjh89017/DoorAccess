@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
     private DaemonConfiguration mDaemon;
 
-    private Button vDisable;
     private ListView vTagList;
 
     private FloatingActionButton vCreate;
@@ -66,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         DaemonConfiguration.Init(this);
         mDaemon = DaemonConfiguration.getInstance();
 
-        vDisable = (Button)findViewById(R.id.Disable);
         vTagList = (ListView)findViewById(R.id.UIDList);
         vCreate = (FloatingActionButton)findViewById(R.id.Create);
         mFragmentManager = getFragmentManager();
@@ -109,17 +107,6 @@ public class MainActivity extends AppCompatActivity {
 
                 menu.add(Menu.NONE, MENU_MODIFY, Menu.NONE, "Modify");
                 menu.add(Menu.NONE, MENU_DELETE, Menu.NONE, "Delete");
-            }
-        });
-
-
-        vDisable.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                mDaemon.disablePatch();
-
-                Toast.makeText(getApplicationContext(), "Static UID Disable", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -193,6 +180,19 @@ public class MainActivity extends AppCompatActivity {
 
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch(item.getItemId()) {
+            case R.id.Disable:
+                mDaemon.disablePatch();
+                Toast.makeText(getApplicationContext(), "Static UID Disable", Toast.LENGTH_SHORT).show();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private static byte[] HexToBytes(String hex) {
