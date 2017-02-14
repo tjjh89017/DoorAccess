@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
                 mDaemon.disablePatch();
 
-                Toast.makeText(getApplicationContext(), "Emulate Tag Disable", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Static UID Disable", Toast.LENGTH_SHORT).show();
             }
         });
 
