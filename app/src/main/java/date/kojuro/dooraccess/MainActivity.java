@@ -74,18 +74,13 @@ public class MainActivity extends AppCompatActivity
 
         Fragment fragment = null;
 
-        if (id == R.id.nav_setuid) {
-            fragment = new SetUIDFragment();
-        } else if (id == R.id.nav_location) {
-            fragment = new BlankFragment2_PingNote();
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        switch(id) {
+            case R.id.nav_setuid:
+                fragment = new SetUIDFragment();
+                break;
+            case R.id.nav_location:
+                fragment = new BlankFragment2_PingNote();
+                break;
         }
 
         fragmentManager.beginTransaction().replace(R.id.content_main_activity_pingnote, fragment).commit();
