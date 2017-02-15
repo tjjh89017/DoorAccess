@@ -1,6 +1,15 @@
 package date.kojuro.dooraccess;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
@@ -9,13 +18,23 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, LocationService.LocationCallback {
+
+    private final static String TAG = "MainActivity";
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
+    private Intent locationIntent;
+    private ServiceConnection mServiceConnection;
+    private boolean serviceAttached = false;
+    private Location mLocation;
+    private LocationService mLocationService;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +55,29 @@ public class MainActivity extends AppCompatActivity
 
         Fragment fragment = new SetUIDFragment();
         fragmentManager.beginTransaction().replace(R.id.content_main_activity_pingnote, fragment).commit();
+
+        /* Start Location Service */
+        locationIntent = new Intent(this, LocationService.class);
+        startService(locationIntent);
+
+        mServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+
+                LocationService.LocationBinder binder = (LocationService.LocationBinder)service;
+                mLocationService = binder.getService();
+                mLocationService.setLocationCallback(MainActivity.this);
+                serviceAttached = true;
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                serviceAttached = false;
+            }
+        };
+
+        bindService(locationIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+
     }
 
     @Override
@@ -88,5 +130,24 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        if(serviceAttached) {
+            serviceAttached = false;
+            unbindService(mServiceConnection);
+        }
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void updateLocation(Location location) {
+        Log.i(TAG, "updateLocation");
+
+        /* maybe save the location for create location-tag relationship */
+        mLocation = location;
     }
 }
