@@ -14,10 +14,12 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LocationService.LocationCallback {
@@ -30,6 +32,8 @@ public class MainActivity extends AppCompatActivity
     private boolean serviceAttached = false;
     private Location mLocation;
     private LocationService mLocationService;
+
+    private SwitchCompat vAutoSwitch;
 
 
     @Override
@@ -74,6 +78,15 @@ public class MainActivity extends AppCompatActivity
 
         bindService(locationIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
 
+        NavigationView view = (NavigationView) findViewById(R.id.nav_view);
+        vAutoSwitch = (SwitchCompat) view.getMenu().findItem(R.id.nav_auto).getActionView().findViewById(R.id.auto_switch);
+        vAutoSwitch.setChecked(true);
+        vAutoSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.i(TAG, "auto switch to " + isChecked);
+            }
+        });
     }
 
     @Override
