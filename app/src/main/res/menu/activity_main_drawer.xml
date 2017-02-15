@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group android:checkableBehavior="single">
         <item
@@ -12,5 +13,17 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="Location" />
     </group>
+
+    <item android:title="Auto Set UID">
+        <menu>
+            <item
+                android:id="@+id/nav_auto"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Auto"
+                android:checkable="false"
+                app:actionLayout="@layout/nav_auto_switch"
+                app:showAsAction="always" />
+        </menu>
+    </item>
 
 </menu>

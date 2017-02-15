@@ -1,6 +1,12 @@
 package date.kojuro.dooraccess;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
@@ -8,14 +14,27 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, LocationService.LocationCallback {
+
+    private final static String TAG = "MainActivity";
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
+    private Intent locationIntent;
+    private ServiceConnection mServiceConnection;
+    private boolean serviceAttached = false;
+    private Location mLocation;
+    private LocationService mLocationService;
+
+    private SwitchCompat vAutoSwitch;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +54,39 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         Fragment fragment = new SetUIDFragment();
-        fragmentManager.beginTransaction().replace(R.id.content_main_activity_pingnote, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.content_main_activity, fragment).commit();
+
+        /* Start Location Service */
+        locationIntent = new Intent(this, LocationService.class);
+        startService(locationIntent);
+
+        mServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+
+                LocationService.LocationBinder binder = (LocationService.LocationBinder)service;
+                mLocationService = binder.getService();
+                mLocationService.setLocationCallback(MainActivity.this);
+                serviceAttached = true;
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                serviceAttached = false;
+            }
+        };
+
+        bindService(locationIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+
+        NavigationView view = (NavigationView) findViewById(R.id.nav_view);
+        vAutoSwitch = (SwitchCompat) view.getMenu().findItem(R.id.nav_auto).getActionView().findViewById(R.id.auto_switch);
+        vAutoSwitch.setChecked(true);
+        vAutoSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.i(TAG, "auto switch to " + isChecked);
+            }
+        });
     }
 
     @Override
@@ -79,14 +130,39 @@ public class MainActivity extends AppCompatActivity
                 fragment = new SetUIDFragment();
                 break;
             case R.id.nav_location:
-                fragment = new BlankFragment2_PingNote();
+                fragment = new LocationFragment();
                 break;
+            default:
+                return true;
         }
 
-        fragmentManager.beginTransaction().replace(R.id.content_main_activity_pingnote, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.content_main_activity, fragment).commit();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        if(serviceAttached) {
+            serviceAttached = false;
+            unbindService(mServiceConnection);
+        }
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void updateLocation(Location location) {
+        Log.i(TAG, "updateLocation");
+
+        /* maybe save the location for create location-tag relationship */
+        mLocation = location;
+    }
+
+    public Location getLocation() {
+        return mLocation;
     }
 }

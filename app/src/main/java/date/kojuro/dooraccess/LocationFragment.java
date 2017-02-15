@@ -1,6 +1,7 @@
 package date.kojuro.dooraccess;
 
 import android.content.Context;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,12 +14,12 @@ import android.widget.TextView;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link BlankFragment2_PingNote.OnFragmentInteractionListener} interface
+ * {@link LocationFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link BlankFragment2_PingNote#newInstance} factory method to
+ * Use the {@link LocationFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BlankFragment2_PingNote extends Fragment {
+public class LocationFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,7 +31,7 @@ public class BlankFragment2_PingNote extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public BlankFragment2_PingNote() {
+    public LocationFragment() {
         // Required empty public constructor
     }
 
@@ -40,11 +41,11 @@ public class BlankFragment2_PingNote extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment BlankFragment2_PingNote.
+     * @return A new instance of fragment LocationFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static BlankFragment2_PingNote newInstance(String param1, String param2) {
-        BlankFragment2_PingNote fragment = new BlankFragment2_PingNote();
+    public static LocationFragment newInstance(String param1, String param2) {
+        LocationFragment fragment = new LocationFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -64,9 +65,16 @@ public class BlankFragment2_PingNote extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_blank_fragment2_pingnote, container, false);
+        View v = inflater.inflate(R.layout.fragment_location, container, false);
         TextView textView = (TextView) v.findViewById(R.id.hello_blank_fragment2);
-        textView.setText("c8763");
+
+        Location location = ((MainActivity)getActivity()).getLocation();
+
+
+        if(location != null) {
+            textView.setText(String.format("Latitude: %f\nLongitude: %f\nAltitude: %f",
+                    location.getLatitude(), location.getLongitude(), location.getAltitude()));
+        }
         return v;
     }
 
