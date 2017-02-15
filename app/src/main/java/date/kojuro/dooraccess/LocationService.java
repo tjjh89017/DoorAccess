@@ -1,8 +1,10 @@
 package date.kojuro.dooraccess;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -92,6 +94,7 @@ public class LocationService extends Service {
 
         initLocationManager();
 
+        /*
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER,
@@ -117,6 +120,18 @@ public class LocationService extends Service {
         } catch (IllegalArgumentException ex) {
             Log.i(TAG, "GPS provider does not exist, ", ex);
         }
+        */
+
+        /* just find out Location when screen on*/
+        /* register screen on event */
+        IntentFilter screenOn = new IntentFilter(Intent.ACTION_SCREEN_ON);
+        registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.i(TAG, "screen on");
+                requestLocation();
+            }
+        }, screenOn);
     }
 
     private void initLocationManager() {
@@ -124,6 +139,37 @@ public class LocationService extends Service {
             mLocationManager = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
     }
+
+    public void requestLocation() {
+
+        initLocationManager();
+        try {
+            mLocationManager.requestSingleUpdate(
+                    LocationManager.NETWORK_PROVIDER,
+                    mLocationListeners[0],
+                    null
+            );
+
+        } catch (SecurityException ex) {
+            Log.i(TAG, "NETWORK Fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.i(TAG, "NETWORK provider does not exist, ", ex);
+        }
+
+        try {
+            mLocationManager.requestSingleUpdate(
+                    LocationManager.GPS_PROVIDER,
+                    mLocationListeners[1],
+                    null
+            );
+        } catch (SecurityException ex) {
+            Log.i(TAG, "GPS Fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.i(TAG, "GPS provider does not exist, ", ex);
+        }
+
+    }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {

@@ -1,8 +1,10 @@
 package date.kojuro.dooraccess;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.Bundle;
@@ -87,6 +89,7 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG, "auto switch to " + isChecked);
             }
         });
+
     }
 
     @Override
