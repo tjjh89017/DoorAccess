@@ -7,9 +7,6 @@ import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
@@ -21,7 +18,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LocationService.LocationCallback {
@@ -54,7 +50,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         Fragment fragment = new SetUIDFragment();
-        fragmentManager.beginTransaction().replace(R.id.content_main_activity_pingnote, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.content_main_activity, fragment).commit();
 
         /* Start Location Service */
         locationIntent = new Intent(this, LocationService.class);
@@ -121,11 +117,13 @@ public class MainActivity extends AppCompatActivity
                 fragment = new SetUIDFragment();
                 break;
             case R.id.nav_location:
-                fragment = new BlankFragment2_PingNote();
+                fragment = new LocationFragment();
                 break;
+            default:
+                return true;
         }
 
-        fragmentManager.beginTransaction().replace(R.id.content_main_activity_pingnote, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.content_main_activity, fragment).commit();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -149,5 +147,9 @@ public class MainActivity extends AppCompatActivity
 
         /* maybe save the location for create location-tag relationship */
         mLocation = location;
+    }
+
+    public Location getLocation() {
+        return mLocation;
     }
 }
