@@ -44,6 +44,7 @@ public class ModifyLocationFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         rLocation.setDescription(vEditDesc.getText().toString());
+                        postInput();
                     }
                 })
                 .setNegativeButton("Cancel", null);
