@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
 
                 LocationService.LocationBinder binder = (LocationService.LocationBinder)service;
                 mLocationService = binder.getService();
-                mLocationService.setLocationCallback(MainActivity.this);
+                mLocationService.setGlobalLocationCallback(MainActivity.this);
                 serviceAttached = true;
             }
 
@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG, "auto switch to " + isChecked);
             }
         });
+
     }
 
     @Override
@@ -164,5 +165,10 @@ public class MainActivity extends AppCompatActivity
 
     public Location getLocation() {
         return mLocation;
+    }
+
+    public LocationService getLocationService() {
+
+        return mLocationService;
     }
 }

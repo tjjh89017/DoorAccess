@@ -4,11 +4,24 @@ import android.content.Context;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.List;
 
 
 /**
@@ -19,7 +32,7 @@ import android.widget.TextView;
  * Use the {@link LocationFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LocationFragment extends Fragment {
+public class LocationFragment extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,6 +43,20 @@ public class LocationFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private FragmentManager mFragmentManager;
+
+    private DBService mDBService;
+    private ReaderLocationDao mRLocationDao;
+    private List<ReaderLocation> mRLocaitonList;
+    private ArrayAdapter<ReaderLocation> mRLocationAdapter;
+
+    private ListView vRLocationList;
+    private FloatingActionButton vCreate;
+
+    private final static int LOC_CONTEXT_MENU_MODIFY = 3;
+    private final static int LOC_CONTEXT_MENU_TAG = 4;
+    private final static int LOC_CONTEXT_MENU_DELETE = 5;
 
     public LocationFragment() {
         // Required empty public constructor
@@ -60,21 +87,98 @@ public class LocationFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        mFragmentManager = getFragmentManager();
+        setHasOptionsMenu(true);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        inflater.inflate(R.menu.location_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+
+        menu.add(Menu.NONE, LOC_CONTEXT_MENU_MODIFY, Menu.NONE, "Modify");
+        menu.add(Menu.NONE, LOC_CONTEXT_MENU_TAG, Menu.NONE, "Tag");
+        menu.add(Menu.NONE, LOC_CONTEXT_MENU_DELETE, Menu.NONE, "Delete");
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem menuItem) {
+
+        final AdapterView.AdapterContextMenuInfo menuInfo;
+        menuInfo = (AdapterView.AdapterContextMenuInfo)menuItem.getMenuInfo();
+
+        /**
+         * menuInfo.position for List index
+         * menuItem.getItemId for operation index
+         */
+        ReaderLocation rLocation = mRLocaitonList.get(menuInfo.position);
+        switch(menuItem.getItemId()) {
+            case LOC_CONTEXT_MENU_MODIFY:
+                Toast.makeText(getContext(), "LOC_CONTEXT_MENU_MODIFY", Toast.LENGTH_SHORT);
+                ModifyLocationFragment modifyLocationFragment = new ModifyLocationFragment(rLocation, menuInfo.position);
+                modifyLocationFragment.setTargetFragment(this, 0);
+                modifyLocationFragment.show(mFragmentManager, "ModifyLocation");
+                break;
+            case LOC_CONTEXT_MENU_TAG:
+                Toast.makeText(getContext(), "LOC_CONTEXT_MENU_TAG", Toast.LENGTH_SHORT);
+                break;
+            case LOC_CONTEXT_MENU_DELETE:
+                Toast.makeText(getContext(), "LOC_CONTEXT_MENU_DELETE", Toast.LENGTH_SHORT);
+                DeleteLocation(rLocation);
+                break;
+        }
+
+        return false;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_location, container, false);
-        TextView textView = (TextView) v.findViewById(R.id.hello_blank_fragment2);
 
-        Location location = ((MainActivity)getActivity()).getLocation();
+        mDBService = DBService.getInstance(getActivity().getApplicationContext());
+        mRLocationDao = mDBService.getReaderLocationDao();
+        mRLocaitonList = mRLocationDao.loadAll();
 
+        vRLocationList = (ListView)v.findViewById(R.id.LocationList);
+        vCreate = (FloatingActionButton)v.findViewById(R.id.Create);
 
-        if(location != null) {
-            textView.setText(String.format("Latitude: %f\nLongitude: %f\nAltitude: %f",
-                    location.getLatitude(), location.getLongitude(), location.getAltitude()));
-        }
+        mRLocationAdapter = new ArrayAdapter<ReaderLocation>(getActivity(), 0 /* useless */, mRLocaitonList) {
+            @NonNull
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+
+                ReaderLocation rLocation = (ReaderLocation)getItem(position);
+                if(convertView == null) {
+                    convertView = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_list_item_2, parent, false);
+                }
+
+                final TextView desc = (TextView)convertView.findViewById(android.R.id.text1);
+                final TextView loc = (TextView)convertView.findViewById(android.R.id.text2);
+
+                desc.setText(rLocation.getDescription());
+                loc.setText(rLocation.getLocationString());
+
+                return convertView;
+            }
+        };
+
+        vRLocationList.setAdapter(mRLocationAdapter);
+        registerForContextMenu(vRLocationList);
+
+        vCreate.setOnClickListener(this);
+
         return v;
     }
 
@@ -103,6 +207,35 @@ public class LocationFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        CreateLocaitonFragment createLocaitonFragment = new CreateLocaitonFragment();
+        createLocaitonFragment.setTargetFragment(this, 0);
+        createLocaitonFragment.show(mFragmentManager, "CreateLocationFragment");
+    }
+
+    public void CreateNewLocation(ReaderLocation rLocation) {
+
+        mRLocaitonList.add(rLocation);
+        mRLocationDao.insert(rLocation);
+        mRLocationAdapter.notifyDataSetChanged();
+    }
+
+    public void ModifyLocation(ReaderLocation rLocaiton, int pos) {
+
+        mRLocaitonList.set(pos, rLocaiton);
+        mRLocationDao.update(rLocaiton);
+        mRLocationAdapter.notifyDataSetChanged();
+    }
+
+    public void DeleteLocation(ReaderLocation rLocation) {
+
+        mRLocationAdapter.remove(rLocation);
+        mRLocationDao.delete(rLocation);
+        mRLocationAdapter.notifyDataSetChanged();
     }
 
     /**

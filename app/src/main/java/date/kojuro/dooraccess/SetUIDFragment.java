@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,8 +50,8 @@ public class SetUIDFragment extends Fragment implements FloatingActionButton.OnC
     private final static byte SAK = 0x20;
     private final static byte[] HIST = new byte[]{};
 
-    private final static int CONTEXT_MENU_MODIFY = Menu.FIRST;
-    private final static int CONTEXT_MENU_DELETE = Menu.FIRST + 1;
+    private final static int UID_CONTEXT_MENU_MODIFY = Menu.FIRST;
+    private final static int UID_CONTEXT_MENU_DELETE = Menu.FIRST + 1;
 
     private DBService mDBService;
     private TagDao mTagDao;
@@ -165,7 +164,7 @@ public class SetUIDFragment extends Fragment implements FloatingActionButton.OnC
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
-        inflater.inflate(R.menu.toolbar_menu, menu);
+        inflater.inflate(R.menu.setuid_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -185,8 +184,8 @@ public class SetUIDFragment extends Fragment implements FloatingActionButton.OnC
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 
-        menu.add(Menu.NONE, CONTEXT_MENU_MODIFY, Menu.NONE, "Modify");
-        menu.add(Menu.NONE, CONTEXT_MENU_DELETE, Menu.NONE, "Delete");
+        menu.add(Menu.NONE, UID_CONTEXT_MENU_MODIFY, Menu.NONE, "Modify");
+        menu.add(Menu.NONE, UID_CONTEXT_MENU_DELETE, Menu.NONE, "Delete");
     }
 
     @Override
@@ -201,7 +200,7 @@ public class SetUIDFragment extends Fragment implements FloatingActionButton.OnC
          */
         final Tag tag = mTagList.get(menuInfo.position);
         switch(menuItem.getItemId()) {
-            case CONTEXT_MENU_MODIFY:
+            case UID_CONTEXT_MENU_MODIFY:
                 // TODO
                 Toast.makeText(getContext(), "Modify Tag", Toast.LENGTH_SHORT);
                 ModifyTagFragment modifyTag = new ModifyTagFragment(tag, menuInfo.position);
@@ -209,7 +208,7 @@ public class SetUIDFragment extends Fragment implements FloatingActionButton.OnC
                 modifyTag.show(mFragmentManager, "ModifyTag");
                 break;
 
-            case CONTEXT_MENU_DELETE:
+            case UID_CONTEXT_MENU_DELETE:
                 /* TODO Need verify operation */
                 DeleteTag(tag);
                 break;

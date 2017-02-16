@@ -38,4 +38,14 @@ public class DBService {
 
         return mDaoSession.getTagDao();
     }
+
+    public ReaderLocationDao getReaderLocationDao() {
+
+        return mDaoSession.getReaderLocationDao();
+    }
+
+    public UIDLocationRelationDao getUIDLocationRelationDao() {
+
+        return mDaoSession.getUIDLocationRelationDao();
+    }
 }
