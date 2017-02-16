@@ -1,10 +1,8 @@
 package date.kojuro.dooraccess;
 
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.Bundle;
@@ -68,7 +66,7 @@ public class MainActivity extends AppCompatActivity
 
                 LocationService.LocationBinder binder = (LocationService.LocationBinder)service;
                 mLocationService = binder.getService();
-                mLocationService.setLocationCallback(MainActivity.this);
+                mLocationService.setGlobalLocationCallback(MainActivity.this);
                 serviceAttached = true;
             }
 
@@ -167,5 +165,10 @@ public class MainActivity extends AppCompatActivity
 
     public Location getLocation() {
         return mLocation;
+    }
+
+    public LocationService getLocationService() {
+
+        return mLocationService;
     }
 }

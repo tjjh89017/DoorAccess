@@ -30,7 +30,7 @@ public class LocationService extends Service {
     private final static float LOCATION_DISTANCE = 0f;
 
     private final LocationBinder locationBinder = new LocationBinder();
-    private LocationCallback locationCallback = null;
+    private LocationCallback globalLocationCallback = null;
 
     public class LocationBinder extends Binder {
 
@@ -43,26 +43,36 @@ public class LocationService extends Service {
         public void updateLocation(Location location);
     }
 
-    public void setLocationCallback(LocationCallback callback) {
-        locationCallback = callback;
+    public void setGlobalLocationCallback(LocationCallback callback) {
+        globalLocationCallback = callback;
     }
 
 
     private class iLocationListener implements LocationListener {
 
         private Location mLocation;
+        private LocationCallback localLocationCallback = null;
 
         public iLocationListener(String provider) {
 
             mLocation = new Location(provider);
         }
 
+        public iLocationListener(String provider, LocationCallback callback) {
+
+            mLocation = new Location(provider);
+            localLocationCallback = callback;
+        }
+
         @Override
         public void onLocationChanged(Location location) {
             Log.i(TAG, "onLocationChanged");
             mLocation.set(location);
-            if(locationCallback != null) {
-                locationCallback.updateLocation(mLocation);
+            if(globalLocationCallback != null) {
+                globalLocationCallback.updateLocation(mLocation);
+            }
+            if(localLocationCallback != null) {
+                localLocationCallback.updateLocation(mLocation);
             }
         }
 
@@ -168,6 +178,35 @@ public class LocationService extends Service {
             Log.i(TAG, "GPS provider does not exist, ", ex);
         }
 
+    }
+
+    public void requestLocation(LocationCallback networkCallback, LocationCallback gpsCallback) {
+
+        initLocationManager();
+        try {
+            mLocationManager.requestSingleUpdate(
+                    LocationManager.NETWORK_PROVIDER,
+                    new iLocationListener(LocationManager.NETWORK_PROVIDER, networkCallback),
+                    null
+            );
+
+        } catch (SecurityException ex) {
+            Log.i(TAG, "NETWORK Fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.i(TAG, "NETWORK provider does not exist, ", ex);
+        }
+
+        try {
+            mLocationManager.requestSingleUpdate(
+                    LocationManager.GPS_PROVIDER,
+                    new iLocationListener(LocationManager.GPS_PROVIDER, gpsCallback),
+                    null
+            );
+        } catch (SecurityException ex) {
+            Log.i(TAG, "GPS Fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.i(TAG, "GPS provider does not exist, ", ex);
+        }
     }
 
 
