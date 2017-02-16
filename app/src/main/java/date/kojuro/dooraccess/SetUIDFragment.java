@@ -46,9 +46,9 @@ public class SetUIDFragment extends Fragment implements FloatingActionButton.OnC
     /* MainFragment */
 
     private final static String TAG = "DoorAccess";
-    private final static byte ATQA = 0x00;
-    private final static byte SAK = 0x20;
-    private final static byte[] HIST = new byte[]{};
+    public final static byte ATQA = 0x00;
+    public final static byte SAK = 0x20;
+    public final static byte[] HIST = new byte[]{};
 
     private final static int UID_CONTEXT_MENU_MODIFY = Menu.FIRST;
     private final static int UID_CONTEXT_MENU_DELETE = Menu.FIRST + 1;
@@ -287,7 +287,7 @@ public class SetUIDFragment extends Fragment implements FloatingActionButton.OnC
     }
 
 
-    private static byte[] HexToBytes(String hex) {
+    public static byte[] HexToBytes(String hex) {
 
         if (hex.length() < 8)
             return null;
