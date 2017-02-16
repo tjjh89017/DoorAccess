@@ -217,7 +217,9 @@ public class MainActivity extends AppCompatActivity
         Log.i(TAG, "tag result: " + result.toString());
 
         /* TODO need check the result ? */
-        enableTag(result.get(0));
+        if(result != null && !result.isEmpty()) {
+            enableTag(result.get(0));
+        }
     }
 
     public Location getLocation() {
