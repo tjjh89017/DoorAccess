@@ -87,4 +87,8 @@ public class Tag {
         this.mDescription = mDescription;
     }
 
+    @Override
+    public String toString() {
+        return getDescription();
+    }
 }

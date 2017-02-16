@@ -132,6 +132,9 @@ public class LocationFragment extends Fragment implements View.OnClickListener {
                 break;
             case LOC_CONTEXT_MENU_TAG:
                 Toast.makeText(getContext(), "LOC_CONTEXT_MENU_TAG", Toast.LENGTH_SHORT);
+                AssociateTagFragment associateTagFragment = new AssociateTagFragment(rLocation, menuInfo.position);
+                associateTagFragment.setTargetFragment(this, 0);
+                associateTagFragment.show(mFragmentManager, "AssociateTag");
                 break;
             case LOC_CONTEXT_MENU_DELETE:
                 Toast.makeText(getContext(), "LOC_CONTEXT_MENU_DELETE", Toast.LENGTH_SHORT);
