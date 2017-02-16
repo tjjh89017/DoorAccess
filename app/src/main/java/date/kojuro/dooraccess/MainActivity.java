@@ -39,16 +39,6 @@ public class MainActivity extends AppCompatActivity
 
     private SwitchCompat vAutoSwitch;
 
-    private UIDLocationRelationDao mULRDao;
-    private List<UIDLocationRelation> mULRList;
-
-    private ReaderLocationDao mRLDao;
-    private List<ReaderLocation> mLList;
-
-    private TagDao mTagDao;
-
-    private DaemonConfiguration mDaemon;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,11 +91,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        mULRDao = DBService.getInstance(this).getUIDLocationRelationDao();
-        mTagDao = DBService.getInstance(this).getTagDao();
-        mRLDao = DBService.getInstance(this).getReaderLocationDao();
-
-        mDaemon = DaemonConfiguration.getInstance();
     }
 
     @Override
@@ -179,47 +164,6 @@ public class MainActivity extends AppCompatActivity
 
         /* maybe save the location for create location-tag relationship */
         mLocation = location;
-
-        /* TODO if `auto` is disable, dont execute to below */
-
-        /* find out the nearest record, and need in URL record */
-        QueryBuilder<ReaderLocation> queryLocation = mRLDao.queryBuilder();
-        queryLocation
-                .join(UIDLocationRelation.class, UIDLocationRelationDao.Properties.ReaderLocationId)
-                .where(UIDLocationRelationDao.Properties.TagId.isNotNull());
-        mLList = queryLocation.list();
-
-        Log.i(TAG, "updateLocation queryLocation: " + mLList.toString());
-        /* no location record */
-        if(mLList == null || mLList.isEmpty()) {
-            return;
-        }
-
-        ReaderLocation nearestLocation = mLList.get(0);
-        float minDistance = location.distanceTo(mLList.get(0).getLocation());
-        for(ReaderLocation rLocation : mLList) {
-            float distance = location.distanceTo(rLocation.getLocation());
-            if(distance < minDistance) {
-                minDistance = distance;
-                nearestLocation = rLocation;
-            }
-        }
-
-        Log.i(TAG, "updateLocation nearestLocation: " + nearestLocation.getDescription());
-
-        /* join 3 tables */
-        QueryBuilder<Tag> queryBuilder = mTagDao.queryBuilder();
-        queryBuilder
-                .join(UIDLocationRelation.class, UIDLocationRelationDao.Properties.TagId)
-                .where(UIDLocationRelationDao.Properties.ReaderLocationId.eq(nearestLocation.getId()));
-
-        List<Tag> result = queryBuilder.list();
-        Log.i(TAG, "tag result: " + result.toString());
-
-        /* TODO need check the result ? */
-        if(result != null && !result.isEmpty()) {
-            enableTag(result.get(0));
-        }
     }
 
     public Location getLocation() {
@@ -229,22 +173,5 @@ public class MainActivity extends AppCompatActivity
     public LocationService getLocationService() {
 
         return mLocationService;
-    }
-
-    public void enableTag(Tag tag) {
-
-        /* It will execute by service be for MainActivity onCreate */
-        if(mDaemon == null) {
-            mDaemon = DaemonConfiguration.getInstance();
-        }
-
-        mDaemon.disablePatch();
-        mDaemon.uploadConfiguration(
-                SetUIDFragment.ATQA,
-                SetUIDFragment.SAK,
-                SetUIDFragment.HIST,
-                SetUIDFragment.HexToBytes(tag.getUID())
-        );
-        mDaemon.enablePatch();
     }
 }
