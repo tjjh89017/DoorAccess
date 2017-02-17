@@ -47,7 +47,7 @@ public class SetUIDFragment extends Fragment implements FloatingActionButton.OnC
 
     private final static String TAG = "DoorAccess";
     public final static byte ATQA = 0x00;
-    public final static byte SAK = 0x20;
+    public final static byte SAK = 0x08;
     public final static byte[] HIST = new byte[]{};
 
     private final static int UID_CONTEXT_MENU_MODIFY = Menu.FIRST;
